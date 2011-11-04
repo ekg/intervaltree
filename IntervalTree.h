@@ -54,39 +54,47 @@ public:
     IntervalTree<T>* right;
     int center;
 
-    IntervalTree(void)
+    IntervalTree<T>(void)
         : left(NULL)
         , right(NULL)
         , center(0)
     { }
 
-    IntervalTree(const IntervalTree<T>& other) {
+    IntervalTree<T>(const IntervalTree<T>& other) {
+        center = other.center;
+        intervals = other.intervals;
         if (other.left) {
-            left = new IntervalTree<T>();
+            left = (IntervalTree<T>*) malloc(sizeof(IntervalTree<T>));
             *left = *other.left;
+        } else {
+            left = NULL;
         }
         if (other.right) {
             right = new IntervalTree<T>();
             *right = *other.right;
+        } else {
+            right = NULL;
         }
-        center = other.center;
-        intervals = other.intervals;
     }
 
-    IntervalTree& operator=(const IntervalTree<T>& other) {
+    IntervalTree<T>& operator=(const IntervalTree<T>& other) {
+        center = other.center;
+        intervals = other.intervals;
         if (other.left) {
             left = new IntervalTree<T>();
             *left = *other.left;
+        } else {
+            left = NULL;
         }
         if (other.right) {
             right = new IntervalTree<T>();
             *right = *other.right;
+        } else {
+            right = NULL;
         }
-        center = other.center;
-        intervals = other.intervals;
     }
 
-    IntervalTree(
+    IntervalTree<T>(
             vector<Interval<T> >& ivals,
             int depth = 16,
             int minbucket = 64,
