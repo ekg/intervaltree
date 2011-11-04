@@ -8,58 +8,61 @@
 using namespace std;
 
 
+template <class T>
 class Interval {
-    friend int intervalStart(const Interval& i);
-    friend int intervalStop(const Interval& i);
-    friend ostream& operator<<(ostream& out, Interval& i);
 public:
     int start;
     int stop;
-    Interval(int s, int e)
+    T value;
+    Interval(int s, int e, const T& v)
         : start(s)
         , stop(e)
+        , value(v)
     { }
 };
 
-int intervalStart(const Interval& i) {
+template <class T>
+int intervalStart(const Interval<T>& i) {
     return i.start;
 }
 
-int intervalStop(const Interval& i) {
+template <class T>
+int intervalStop(const Interval<T>& i) {
     return i.stop;
 }
 
-ostream& operator<<(ostream& out, Interval& i) {
-    out << "Interval(" << i.start << ", " << i.stop << ")";
+template <class T>
+ostream& operator<<(ostream& out, Interval<T>& i) {
+    out << "Interval(" << i.start << ", " << i.stop << "): " << i.value;
     return out;
 }
 
+template <class T>
 class IntervalStartSorter {
 public:
-    bool operator() (const Interval& a, const Interval& b) {
+    bool operator() (const Interval<T>& a, const Interval<T>& b) {
         return a.start < b.start;
     }
 };
 
+template <class T>
 class IntervalTree {
 
 public:
-    vector<Interval> intervals;
-    IntervalTree* left;
-    IntervalTree* right;
+    vector<Interval<T> > intervals;
+    IntervalTree<T>* left;
+    IntervalTree<T>* right;
     int center;
-    bool emptyTree;
 
     IntervalTree(
-            vector<Interval>& ivals,
+            vector<Interval<T> >& ivals,
             int depth = 16,
             int minbucket = 64,
             int leftextent = 0,
             int rightextent = 0,
             int maxbucket = 512
             )
-        : emptyTree(false)
-        , left(NULL)
+        : left(NULL)
         , right(NULL)
     {
 
@@ -69,7 +72,7 @@ public:
         } else {
             if (leftextent == 0 && rightextent == 0) {
                 // sort intervals by start
-                IntervalStartSorter intervalStartSorter;
+                IntervalStartSorter<T> intervalStartSorter;
                 sort(ivals.begin(), ivals.end(), intervalStartSorter);
             }
 
@@ -84,7 +87,7 @@ public:
                 leftp = ivals.front().start;
                 vector<int> stops;
                 stops.resize(ivals.size());
-                transform(ivals.begin(), ivals.end(), stops.begin(), intervalStop);
+                transform(ivals.begin(), ivals.end(), stops.begin(), intervalStop<T>);
                 rightp = *max_element(stops.begin(), stops.end());
             }
 
@@ -92,11 +95,11 @@ public:
             centerp = ivals.at(ivals.size() / 2).start;
             center = centerp;
 
-            vector<Interval> lefts;
-            vector<Interval> rights;
+            vector<Interval<T> > lefts;
+            vector<Interval<T> > rights;
 
-            for (vector<Interval>::iterator i = ivals.begin(); i != ivals.end(); ++i) {
-                Interval& interval = *i;
+            for (typename vector<Interval<T> >::iterator i = ivals.begin(); i != ivals.end(); ++i) {
+                Interval<T>& interval = *i;
                 if (interval.stop < center) {
                     lefts.push_back(interval);
                 } else if (interval.start > center) {
@@ -107,18 +110,18 @@ public:
             }
 
             if (!lefts.empty()) {
-                left = new IntervalTree(lefts, depth, minbucket, leftp, centerp);
+                left = new IntervalTree<T>(lefts, depth, minbucket, leftp, centerp);
             }
             if (!rights.empty()) {
-                right = new IntervalTree(rights, depth, minbucket, centerp, rightp);
+                right = new IntervalTree<T>(rights, depth, minbucket, centerp, rightp);
             }
         }
     }
 
-    void findOverlapping(int start, int stop, vector<Interval>& overlapping) {
+    void findOverlapping(int start, int stop, vector<Interval<T> >& overlapping) {
         if (!intervals.empty() && ! (stop < intervals.front().start)) {
-            for (vector<Interval>::iterator i = intervals.begin(); i != intervals.end(); ++i) {
-                Interval& interval = *i;
+            for (typename vector<Interval<T> >::iterator i = intervals.begin(); i != intervals.end(); ++i) {
+                Interval<T>& interval = *i;
                 if (interval.stop >= start && interval.start <= stop) {
                     overlapping.push_back(interval);
                 }
@@ -135,10 +138,10 @@ public:
 
     }
 
-    void findContained(int start, int stop, vector<Interval>& contained) {
+    void findContained(int start, int stop, vector<Interval<T> >& contained) {
         if (!intervals.empty() && ! (stop < intervals.front().start)) {
-            for (vector<Interval>::iterator i = intervals.begin(); i != intervals.end(); ++i) {
-                Interval& interval = *i;
+            for (typename vector<Interval<T> >::iterator i = intervals.begin(); i != intervals.end(); ++i) {
+                Interval<T>& interval = *i;
                 if (interval.start >= start && interval.stop <= stop) {
                     contained.push_back(interval);
                 }
