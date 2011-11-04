@@ -54,6 +54,38 @@ public:
     IntervalTree<T>* right;
     int center;
 
+    IntervalTree(void)
+        : left(NULL)
+        , right(NULL)
+        , center(0)
+    { }
+
+    IntervalTree(const IntervalTree<T>& other) {
+        if (other.left) {
+            left = new IntervalTree<T>();
+            *left = *other.left;
+        }
+        if (other.right) {
+            right = new IntervalTree<T>();
+            *right = *other.right;
+        }
+        center = other.center;
+        intervals = other.intervals;
+    }
+
+    IntervalTree& operator=(const IntervalTree<T>& other) {
+        if (other.left) {
+            left = new IntervalTree<T>();
+            *left = *other.left;
+        }
+        if (other.right) {
+            right = new IntervalTree<T>();
+            *right = *other.right;
+        }
+        center = other.center;
+        intervals = other.intervals;
+    }
+
     IntervalTree(
             vector<Interval<T> >& ivals,
             int depth = 16,
@@ -170,7 +202,5 @@ public:
     }
 
 };
-
-
 
 #endif
