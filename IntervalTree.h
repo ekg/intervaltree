@@ -92,22 +92,23 @@ public:
         } else {
             right = NULL;
         }
+	return *this;
     }
 
     IntervalTree<T>(
             vector<Interval<T> >& ivals,
-            int depth = 16,
-            int minbucket = 64,
+            unsigned int depth = 16,
+            unsigned int minbucket = 64,
             int leftextent = 0,
             int rightextent = 0,
-            int maxbucket = 512
+            unsigned int maxbucket = 512
             )
         : left(NULL)
         , right(NULL)
     {
 
         --depth;
-        if (depth == 0 || ivals.size() < minbucket && ivals.size() < maxbucket) {
+        if (depth == 0 || (ivals.size() < minbucket && ivals.size() < maxbucket)) {
             intervals = ivals;
         } else {
             if (leftextent == 0 && rightextent == 0) {
