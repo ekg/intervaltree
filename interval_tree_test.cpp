@@ -13,19 +13,19 @@ int randInt(int floor, int ceiling) {
     return floor + range * ((double) rand() / (double) (RAND_MAX + 1.0));
 }
 
-template<class T>
-Interval<T> randomInterval(int maxStart, int maxLength, int maxStop, const T& value) {
+template<class T, class K>
+Interval<T,K> randomInterval(int maxStart, int maxLength, int maxStop, const T& value) {
     int start = randInt(0, maxStart);
     int stop = min(randInt(start, start + maxLength), maxStop);
-    return Interval<T>(start, stop, value);
+    return Interval<T,K>(start, stop, value);
 }
 
 int main() {
 
     srand((unsigned)time(NULL));
 
-    vector<Interval<bool> > intervals;
-    vector<Interval<bool> > queries;
+    vector<Interval<bool,int> > intervals;
+    vector<Interval<bool,int> > queries;
 
     // generate a test set of target intervals
     for (int i = 0; i < 10000; ++i) {
@@ -42,9 +42,9 @@ int main() {
     // using brute-force search
     vector<int> bruteforcecounts;
     Clock::time_point t0 = Clock::now();
-    for (vector<Interval<bool> >::iterator q = queries.begin(); q != queries.end(); ++q) {
-        vector<Interval<bool> > results;
-        for (vector<Interval<bool> >::iterator i = intervals.begin(); i != intervals.end(); ++i) {
+    for (vector<Interval<bool,int> >::iterator q = queries.begin(); q != queries.end(); ++q) {
+        vector<Interval<bool,int> > results;
+        for (vector<Interval<bool,int> >::iterator i = intervals.begin(); i != intervals.end(); ++i) {
             if (i->start >= q->start && i->stop <= q->stop) {
                 results.push_back(*i);
             }
@@ -57,12 +57,12 @@ int main() {
 
     // using the interval tree
     //IntervalTree<bool> tree(intervals);
-    IntervalTree<bool> tree;
-    tree = IntervalTree<bool>(intervals);
+    IntervalTree<bool,int> tree;
+    tree = IntervalTree<bool,int>(intervals);
     vector<int> treecounts;
     t0 = Clock::now();
-    for (vector<Interval<bool> >::iterator q = queries.begin(); q != queries.end(); ++q) {
-        vector<Interval<bool> > results;
+    for (vector<Interval<bool,int> >::iterator q = queries.begin(); q != queries.end(); ++q) {
+        vector<Interval<bool,int> > results;
         tree.findContained(q->start, q->stop, results);
         treecounts.push_back(results.size());
     }
