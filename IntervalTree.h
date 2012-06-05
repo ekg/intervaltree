@@ -128,7 +128,7 @@ public:
                 leftp = ivals.front().start;
                 vector<K> stops;
                 stops.resize(ivals.size());
-                transform(ivals.begin(), ivals.end(), stops.begin(), intervalStop<T>);
+                transform(ivals.begin(), ivals.end(), stops.begin(), intervalStop<T,K>);
                 rightp = *max_element(stops.begin(), stops.end());
             }
 
