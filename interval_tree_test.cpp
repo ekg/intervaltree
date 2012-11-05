@@ -62,9 +62,7 @@ int main() {
     cout << "brute force:\t" << ms.count() << "ms" << endl;
 
     // using the interval tree
-    //IntervalTree<bool> tree(intervals);
-    intervalTree tree;
-    tree = intervalTree(intervals);
+    intervalTree tree = intervalTree(intervals);
     countsVector treecounts;
     t0 = Clock::now();
     for (intervalVector::iterator q = queries.begin(); q != queries.end(); ++q) {
