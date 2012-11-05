@@ -12,15 +12,16 @@ typedef Interval<bool,int> interval;
 typedef vector<interval> intervalVector;
 typedef IntervalTree<bool,int> intervalTree;
 
-int randInt(int floor, int ceiling) {
-    int range = ceiling - floor;
+template<typename K>
+K randKey(K floor, K ceiling) {
+    K range = ceiling - floor;
     return floor + range * ((double) rand() / (double) (RAND_MAX + 1.0));
 }
 
 template<class T, typename K>
-Interval<T,K> randomInterval(int maxStart, int maxLength, int maxStop, const T& value) {
-    int start = randInt(0, maxStart);
-    int stop = min(randInt(start, start + maxLength), maxStop);
+Interval<T,K> randomInterval(K maxStart, K maxLength, K maxStop, const T& value) {
+    K start = randKey<K>(0, maxStart);
+    K stop = min<K>(randKey<K>(start, start + maxLength), maxStop);
     return Interval<T,K>(start, stop, value);
 }
 
