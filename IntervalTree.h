@@ -8,7 +8,7 @@
 using namespace std;
 
 
-template <class T, typename K>
+template <class T, typename K = int>
 class Interval {
 public:
     K start;
@@ -21,23 +21,23 @@ public:
     { }
 };
 
-template <class T, typename K>
+template <class T, typename K = int>
 int intervalStart(const Interval<T,K>& i) {
     return i.start;
 }
 
-template <class T, typename K>
+template <class T, typename K = int>
 int intervalStop(const Interval<T,K>& i) {
     return i.stop;
 }
 
-template <class T, typename K>
+template <class T, typename K = int>
 ostream& operator<<(ostream& out, Interval<T,K>& i) {
     out << "Interval(" << i.start << ", " << i.stop << "): " << i.value;
     return out;
 }
 
-template <class T, typename K>
+template <class T, typename K = int>
 class IntervalStartSorter {
 public:
     bool operator() (const Interval<T,K>& a, const Interval<T,K>& b) {
@@ -45,7 +45,7 @@ public:
     }
 };
 
-template <class T, typename K>
+template <class T, typename K = int>
 class IntervalTree {
 
 public:
