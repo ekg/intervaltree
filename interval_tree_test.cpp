@@ -17,7 +17,7 @@ int randInt(int floor, int ceiling) {
     return floor + range * ((double) rand() / (double) (RAND_MAX + 1.0));
 }
 
-template<class T, class K>
+template<class T, typename K>
 Interval<T,K> randomInterval(int maxStart, int maxLength, int maxStop, const T& value) {
     int start = randInt(0, maxStart);
     int stop = min(randInt(start, start + maxLength), maxStop);
