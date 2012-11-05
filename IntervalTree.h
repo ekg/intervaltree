@@ -96,7 +96,7 @@ public:
         } else {
             right = NULL;
         }
-	return *this;
+        return *this;
     }
 
     IntervalTree<T,K>(
