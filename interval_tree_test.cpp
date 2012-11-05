@@ -25,7 +25,7 @@ Interval<T,K> randomInterval(int maxStart, int maxLength, int maxStop, const T& 
 }
 
 int main() {
-    typedef vector<int> countsVector;
+    typedef vector<std::size_t> countsVector;
 
     srand((unsigned)time(NULL));
 
