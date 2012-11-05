@@ -8,6 +8,10 @@
 
 using namespace std;
 
+typedef Interval<bool,int> interval;
+typedef vector<interval> intervalVector;
+typedef IntervalTree<bool,int> intervalTree;
+
 int randInt(int floor, int ceiling) {
     int range = ceiling - floor;
     return floor + range * ((double) rand() / (double) (RAND_MAX + 1.0));
@@ -21,11 +25,12 @@ Interval<T,K> randomInterval(int maxStart, int maxLength, int maxStop, const T& 
 }
 
 int main() {
+    typedef vector<int> countsVector;
 
     srand((unsigned)time(NULL));
 
-    vector<Interval<bool,int> > intervals;
-    vector<Interval<bool,int> > queries;
+    intervalVector intervals;
+    intervalVector queries;
 
     // generate a test set of target intervals
     for (int i = 0; i < 10000; ++i) {
@@ -40,11 +45,11 @@ int main() {
     typedef chrono::milliseconds milliseconds;
 
     // using brute-force search
-    vector<int> bruteforcecounts;
+    countsVector bruteforcecounts;
     Clock::time_point t0 = Clock::now();
-    for (vector<Interval<bool,int> >::iterator q = queries.begin(); q != queries.end(); ++q) {
-        vector<Interval<bool,int> > results;
-        for (vector<Interval<bool,int> >::iterator i = intervals.begin(); i != intervals.end(); ++i) {
+    for (intervalVector::iterator q = queries.begin(); q != queries.end(); ++q) {
+        intervalVector results;
+        for (intervalVector::iterator i = intervals.begin(); i != intervals.end(); ++i) {
             if (i->start >= q->start && i->stop <= q->stop) {
                 results.push_back(*i);
             }
@@ -57,12 +62,12 @@ int main() {
 
     // using the interval tree
     //IntervalTree<bool> tree(intervals);
-    IntervalTree<bool,int> tree;
-    tree = IntervalTree<bool,int>(intervals);
-    vector<int> treecounts;
+    intervalTree tree;
+    tree = intervalTree(intervals);
+    countsVector treecounts;
     t0 = Clock::now();
-    for (vector<Interval<bool,int> >::iterator q = queries.begin(); q != queries.end(); ++q) {
-        vector<Interval<bool,int> > results;
+    for (intervalVector::iterator q = queries.begin(); q != queries.end(); ++q) {
+        intervalVector results;
         tree.findContained(q->start, q->stop, results);
         treecounts.push_back(results.size());
     }
@@ -71,8 +76,8 @@ int main() {
     cout << "interval tree:\t" << ms.count() << "ms" << endl;
 
     // check that the same number of results are returned
-    vector<int>::iterator b = bruteforcecounts.begin();
-    for (vector<int>::iterator t = treecounts.begin(); t != treecounts.end(); ++t, ++b) {
+    countsVector::iterator b = bruteforcecounts.begin();
+    for (countsVector::iterator t = treecounts.begin(); t != treecounts.end(); ++t, ++b) {
         assert(*b == *t);
     }
 

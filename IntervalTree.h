@@ -49,9 +49,13 @@ template <class T, class K>
 class IntervalTree {
 
 public:
-    vector<Interval<T,K> > intervals;
-    IntervalTree<T,K>* left;
-    IntervalTree<T,K>* right;
+    typedef Interval<T,K> interval;
+    typedef vector<interval> intervalVector;
+    typedef IntervalTree<T,K> intervalTree;
+    
+    intervalVector intervals;
+    intervalTree* left;
+    intervalTree* right;
     int center;
 
     IntervalTree<T,K>(void)
@@ -60,34 +64,34 @@ public:
         , center(0)
     { }
 
-    IntervalTree<T,K>(const IntervalTree<T,K>& other) {
+    IntervalTree<T,K>(const intervalTree& other) {
         center = other.center;
         intervals = other.intervals;
         if (other.left) {
-            left = (IntervalTree<T,K>*) malloc(sizeof(IntervalTree<T,K>));
+            left = (intervalTree*) malloc(sizeof(intervalTree));
             *left = *other.left;
         } else {
             left = NULL;
         }
         if (other.right) {
-            right = new IntervalTree<T,K>();
+            right = new intervalTree();
             *right = *other.right;
         } else {
             right = NULL;
         }
     }
 
-    IntervalTree<T,K>& operator=(const IntervalTree<T,K>& other) {
+    IntervalTree<T,K>& operator=(const intervalTree& other) {
         center = other.center;
         intervals = other.intervals;
         if (other.left) {
-            left = new IntervalTree<T,K>();
+            left = new intervalTree();
             *left = *other.left;
         } else {
             left = NULL;
         }
         if (other.right) {
-            right = new IntervalTree<T,K>();
+            right = new intervalTree();
             *right = *other.right;
         } else {
             right = NULL;
@@ -96,7 +100,7 @@ public:
     }
 
     IntervalTree<T,K>(
-            vector<Interval<T,K> >& ivals,
+            intervalVector& ivals,
             unsigned int depth = 16,
             unsigned int minbucket = 64,
             int leftextent = 0,
@@ -136,11 +140,11 @@ public:
             centerp = ivals.at(ivals.size() / 2).start;
             center = centerp;
 
-            vector<Interval<T,K> > lefts;
-            vector<Interval<T,K> > rights;
+            intervalVector lefts;
+            intervalVector rights;
 
-            for (typename vector<Interval<T,K> >::iterator i = ivals.begin(); i != ivals.end(); ++i) {
-                Interval<T,K>& interval = *i;
+            for (typename intervalVector::iterator i = ivals.begin(); i != ivals.end(); ++i) {
+                interval& interval = *i;
                 if (interval.stop < center) {
                     lefts.push_back(interval);
                 } else if (interval.start > center) {
@@ -151,18 +155,18 @@ public:
             }
 
             if (!lefts.empty()) {
-                left = new IntervalTree<T,K>(lefts, depth, minbucket, leftp, centerp);
+                left = new intervalTree(lefts, depth, minbucket, leftp, centerp);
             }
             if (!rights.empty()) {
-                right = new IntervalTree<T,K>(rights, depth, minbucket, centerp, rightp);
+                right = new intervalTree(rights, depth, minbucket, centerp, rightp);
             }
         }
     }
 
-    void findOverlapping(K start, K stop, vector<Interval<T,K> >& overlapping) {
+    void findOverlapping(K start, K stop, intervalVector& overlapping) {
         if (!intervals.empty() && ! (stop < intervals.front().start)) {
-            for (typename vector<Interval<T,K> >::iterator i = intervals.begin(); i != intervals.end(); ++i) {
-                Interval<T,K>& interval = *i;
+            for (typename intervalVector::iterator i = intervals.begin(); i != intervals.end(); ++i) {
+                interval& interval = *i;
                 if (interval.stop >= start && interval.start <= stop) {
                     overlapping.push_back(interval);
                 }
@@ -179,10 +183,10 @@ public:
 
     }
 
-    void findContained(K start, K stop, vector<Interval<T,K> >& contained) {
+    void findContained(K start, K stop, intervalVector& contained) {
         if (!intervals.empty() && ! (stop < intervals.front().start)) {
-            for (typename vector<Interval<T,K> >::iterator i = intervals.begin(); i != intervals.end(); ++i) {
-                Interval<T,K>& interval = *i;
+            for (typename intervalVector::iterator i = intervals.begin(); i != intervals.end(); ++i) {
+                interval& interval = *i;
                 if (interval.start >= start && interval.stop <= stop) {
                     contained.push_back(interval);
                 }
