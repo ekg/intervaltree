@@ -8,9 +8,9 @@
 
 using namespace std;
 
-typedef Interval<bool,int> interval;
+typedef Interval<bool> interval;
 typedef vector<interval> intervalVector;
-typedef IntervalTree<bool,int> intervalTree;
+typedef IntervalTree<bool> intervalTree;
 
 template<typename K>
 K randKey(K floor, K ceiling) {
@@ -35,11 +35,11 @@ int main() {
 
     // generate a test set of target intervals
     for (int i = 0; i < 10000; ++i) {
-        intervals.push_back(randomInterval<bool,int>(100000, 1000, 100000 + 1, true));
+        intervals.push_back(randomInterval<bool>(100000, 1000, 100000 + 1, true));
     }
     // and queries
     for (int i = 0; i < 5000; ++i) {
-        queries.push_back(randomInterval<bool,int>(100000, 1000, 100000 + 1, true));
+        queries.push_back(randomInterval<bool>(100000, 1000, 100000 + 1, true));
     }
 
     typedef chrono::high_resolution_clock Clock;
