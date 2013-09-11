@@ -21,17 +21,17 @@ public:
     { }
 };
 
-template <class T, typename K = int>
+template <class T, typename K>
 int intervalStart(const Interval<T,K>& i) {
     return i.start;
 }
 
-template <class T, typename K = int>
+template <class T, typename K>
 int intervalStop(const Interval<T,K>& i) {
     return i.stop;
 }
 
-template <class T, typename K = int>
+template <class T, typename K>
 ostream& operator<<(ostream& out, Interval<T,K>& i) {
     out << "Interval(" << i.start << ", " << i.stop << "): " << i.value;
     return out;
