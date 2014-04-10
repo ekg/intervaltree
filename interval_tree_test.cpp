@@ -28,11 +28,25 @@ Interval<T,K> randomInterval(K maxStart, K maxLength, K maxStop, const T& value)
 int main() {
     typedef vector<std::size_t> countsVector;
 
+    // a simple sanity check
+    intervalVector sanityIntervals;
+    sanityIntervals.push_back(interval(60, 80, true));
+    sanityIntervals.push_back(interval(20, 40, true));
+    intervalTree sanityTree(sanityIntervals);
+
+    intervalVector sanityResults;
+    sanityTree.findOverlapping(30, 50, sanityResults);
+    assert(sanityResults.size() == 1);
+    sanityResults.clear();
+    sanityTree.findContained(15, 45, sanityResults);
+    assert(sanityResults.size() == 1);
+     
+
     srand((unsigned)time(NULL));
 
     intervalVector intervals;
     intervalVector queries;
-
+    
     // generate a test set of target intervals
     for (int i = 0; i < 10000; ++i) {
         intervals.push_back(randomInterval<bool>(100000, 1000, 100000 + 1, true));
