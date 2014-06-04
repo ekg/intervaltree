@@ -5,8 +5,6 @@
 #include <algorithm>
 #include <iostream>
 
-using namespace std;
-
 
 template <class T, typename K = int>
 class Interval {
@@ -32,7 +30,7 @@ int intervalStop(const Interval<T,K>& i) {
 }
 
 template <class T, typename K>
-ostream& operator<<(ostream& out, Interval<T,K>& i) {
+std::ostream& operator<<(std::ostream& out, Interval<T,K>& i) {
     out << "Interval(" << i.start << ", " << i.stop << "): " << i.value;
     return out;
 }
@@ -50,7 +48,7 @@ class IntervalTree {
 
 public:
     typedef Interval<T,K> interval;
-    typedef vector<interval> intervalVector;
+    typedef std::vector<interval> intervalVector;
     typedef IntervalTree<T,K> intervalTree;
 
     intervalVector intervals;
@@ -114,12 +112,12 @@ public:
         --depth;
         IntervalStartSorter<T,K> intervalStartSorter;
         if (depth == 0 || (ivals.size() < minbucket && ivals.size() < maxbucket)) {
-            sort(ivals.begin(), ivals.end(), intervalStartSorter);
+            std::sort(ivals.begin(), ivals.end(), intervalStartSorter);
             intervals = ivals;
         } else {
             if (leftextent == 0 && rightextent == 0) {
                 // sort intervals by start
-                sort(ivals.begin(), ivals.end(), intervalStartSorter);
+                std::sort(ivals.begin(), ivals.end(), intervalStartSorter);
             }
 
             int leftp = 0;
@@ -131,10 +129,10 @@ public:
                 rightp = rightextent;
             } else {
                 leftp = ivals.front().start;
-                vector<K> stops;
+                std::vector<K> stops;
                 stops.resize(ivals.size());
-                transform(ivals.begin(), ivals.end(), stops.begin(), intervalStop<T,K>);
-                rightp = *max_element(stops.begin(), stops.end());
+                std::transform(ivals.begin(), ivals.end(), stops.begin(), intervalStop<T,K>);
+                rightp = *std::max_element(stops.begin(), stops.end());
             }
 
             //centerp = ( leftp + rightp ) / 2;
