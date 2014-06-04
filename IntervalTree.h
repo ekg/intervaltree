@@ -52,7 +52,7 @@ public:
     typedef Interval<T,K> interval;
     typedef vector<interval> intervalVector;
     typedef IntervalTree<T,K> intervalTree;
-    
+
     intervalVector intervals;
     intervalTree* left;
     intervalTree* right;
@@ -68,7 +68,7 @@ public:
         center = other.center;
         intervals = other.intervals;
         if (other.left) {
-            left = (intervalTree*) malloc(sizeof(intervalTree));
+            left = new intervalTree();
             *left = *other.left;
         } else {
             left = NULL;
@@ -125,7 +125,7 @@ public:
             int leftp = 0;
             int rightp = 0;
             int centerp = 0;
-            
+
             if (leftextent || rightextent) {
                 leftp = leftextent;
                 rightp = rightextent;
