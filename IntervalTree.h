@@ -62,20 +62,17 @@ public:
         , center(0)
     { }
 
-    IntervalTree<T,K>(const intervalTree& other) {
+    IntervalTree<T,K>(const intervalTree& other) 
+        : left(NULL)
+        , right(NULL)
+    {
         center = other.center;
         intervals = other.intervals;
         if (other.left) {
-            left = (intervalTree*) malloc(sizeof(intervalTree));
-            *left = *other.left;
-        } else {
-            left = NULL;
+            left = new intervalTree(*other.left);
         }
         if (other.right) {
-            right = new intervalTree();
-            *right = *other.right;
-        } else {
-            right = NULL;
+            right = new intervalTree(*other.right);
         }
     }
 
@@ -83,15 +80,15 @@ public:
         center = other.center;
         intervals = other.intervals;
         if (other.left) {
-            left = new intervalTree();
-            *left = *other.left;
+            left = new intervalTree(*other.left);
         } else {
+            if (left) delete left;
             left = NULL;
         }
         if (other.right) {
-            right = new intervalTree();
-            *right = *other.right;
+            right = new intervalTree(*other.right);
         } else {
+            if (right) delete right;
             right = NULL;
         }
         return *this;
@@ -112,12 +109,12 @@ public:
         --depth;
         IntervalStartSorter<T,K> intervalStartSorter;
         if (depth == 0 || (ivals.size() < minbucket && ivals.size() < maxbucket)) {
-            sort(ivals.begin(), ivals.end(), intervalStartSorter);
+            std::sort(ivals.begin(), ivals.end(), intervalStartSorter);
             intervals = ivals;
         } else {
             if (leftextent == 0 && rightextent == 0) {
                 // sort intervals by start
-                sort(ivals.begin(), ivals.end(), intervalStartSorter);
+              std::sort(ivals.begin(), ivals.end(), intervalStartSorter);
             }
 
             int leftp = 0;
