@@ -5,8 +5,6 @@
 #include <algorithm>
 #include <iostream>
 
-using namespace std;
-
 
 template <class T, typename K = int>
 class Interval {
@@ -32,7 +30,7 @@ int intervalStop(const Interval<T,K>& i) {
 }
 
 template <class T, typename K>
-ostream& operator<<(ostream& out, Interval<T,K>& i) {
+  std::ostream& operator<<(std::ostream& out, Interval<T,K>& i) {
     out << "Interval(" << i.start << ", " << i.stop << "): " << i.value;
     return out;
 }
@@ -50,7 +48,7 @@ class IntervalTree {
 
 public:
     typedef Interval<T,K> interval;
-    typedef vector<interval> intervalVector;
+    typedef std::vector<interval> intervalVector;
     typedef IntervalTree<T,K> intervalTree;
     
     intervalVector intervals;
@@ -64,20 +62,17 @@ public:
         , center(0)
     { }
 
-    IntervalTree<T,K>(const intervalTree& other) {
+    IntervalTree<T,K>(const intervalTree& other) 
+        : left(NULL)
+        , right(NULL)
+    {
         center = other.center;
         intervals = other.intervals;
         if (other.left) {
-            left = (intervalTree*) malloc(sizeof(intervalTree));
-            *left = *other.left;
-        } else {
-            left = NULL;
+            left = new intervalTree(*other.left);
         }
         if (other.right) {
-            right = new intervalTree();
-            *right = *other.right;
-        } else {
-            right = NULL;
+            right = new intervalTree(*other.right);
         }
     }
 
@@ -85,15 +80,15 @@ public:
         center = other.center;
         intervals = other.intervals;
         if (other.left) {
-            left = new intervalTree();
-            *left = *other.left;
+            left = new intervalTree(*other.left);
         } else {
+            if (left) delete left;
             left = NULL;
         }
         if (other.right) {
-            right = new intervalTree();
-            *right = *other.right;
+            right = new intervalTree(*other.right);
         } else {
+            if (right) delete right;
             right = NULL;
         }
         return *this;
@@ -114,12 +109,12 @@ public:
         --depth;
         IntervalStartSorter<T,K> intervalStartSorter;
         if (depth == 0 || (ivals.size() < minbucket && ivals.size() < maxbucket)) {
-            sort(ivals.begin(), ivals.end(), intervalStartSorter);
+            std::sort(ivals.begin(), ivals.end(), intervalStartSorter);
             intervals = ivals;
         } else {
             if (leftextent == 0 && rightextent == 0) {
                 // sort intervals by start
-                sort(ivals.begin(), ivals.end(), intervalStartSorter);
+              std::sort(ivals.begin(), ivals.end(), intervalStartSorter);
             }
 
             int leftp = 0;
@@ -131,7 +126,7 @@ public:
                 rightp = rightextent;
             } else {
                 leftp = ivals.front().start;
-                vector<K> stops;
+                std::vector<K> stops;
                 stops.resize(ivals.size());
                 transform(ivals.begin(), ivals.end(), stops.begin(), intervalStop<T,K>);
                 rightp = *max_element(stops.begin(), stops.end());
@@ -164,10 +159,10 @@ public:
         }
     }
 
-    void findOverlapping(K start, K stop, intervalVector& overlapping) {
+    void findOverlapping(K start, K stop, intervalVector& overlapping) const {
         if (!intervals.empty() && ! (stop < intervals.front().start)) {
-            for (typename intervalVector::iterator i = intervals.begin(); i != intervals.end(); ++i) {
-                interval& interval = *i;
+            for (typename intervalVector::const_iterator i = intervals.begin(); i != intervals.end(); ++i) {
+                const interval& interval = *i;
                 if (interval.stop >= start && interval.start <= stop) {
                     overlapping.push_back(interval);
                 }
@@ -184,10 +179,10 @@ public:
 
     }
 
-    void findContained(K start, K stop, intervalVector& contained) {
+    void findContained(K start, K stop, intervalVector& contained) const {
         if (!intervals.empty() && ! (stop < intervals.front().start)) {
-            for (typename intervalVector::iterator i = intervals.begin(); i != intervals.end(); ++i) {
-                interval& interval = *i;
+            for (typename intervalVector::const_iterator i = intervals.begin(); i != intervals.end(); ++i) {
+                const interval& interval = *i;
                 if (interval.start >= start && interval.stop <= stop) {
                     contained.push_back(interval);
                 }
