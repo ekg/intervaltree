@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <iostream>
 
+using namespace std;
+
 
 template <class T, typename K = int>
 class Interval {
@@ -30,7 +32,7 @@ int intervalStop(const Interval<T,K>& i) {
 }
 
 template <class T, typename K>
-std::ostream& operator<<(std::ostream& out, Interval<T,K>& i) {
+ostream& operator<<(ostream& out, Interval<T,K>& i) {
     out << "Interval(" << i.start << ", " << i.stop << "): " << i.value;
     return out;
 }
@@ -48,9 +50,9 @@ class IntervalTree {
 
 public:
     typedef Interval<T,K> interval;
-    typedef std::vector<interval> intervalVector;
+    typedef vector<interval> intervalVector;
     typedef IntervalTree<T,K> intervalTree;
-
+    
     intervalVector intervals;
     intervalTree* left;
     intervalTree* right;
@@ -66,7 +68,7 @@ public:
         center = other.center;
         intervals = other.intervals;
         if (other.left) {
-            left = new intervalTree();
+            left = (intervalTree*) malloc(sizeof(intervalTree));
             *left = *other.left;
         } else {
             left = NULL;
@@ -112,27 +114,27 @@ public:
         --depth;
         IntervalStartSorter<T,K> intervalStartSorter;
         if (depth == 0 || (ivals.size() < minbucket && ivals.size() < maxbucket)) {
-            std::sort(ivals.begin(), ivals.end(), intervalStartSorter);
+            sort(ivals.begin(), ivals.end(), intervalStartSorter);
             intervals = ivals;
         } else {
             if (leftextent == 0 && rightextent == 0) {
                 // sort intervals by start
-                std::sort(ivals.begin(), ivals.end(), intervalStartSorter);
+                sort(ivals.begin(), ivals.end(), intervalStartSorter);
             }
 
             int leftp = 0;
             int rightp = 0;
             int centerp = 0;
-
+            
             if (leftextent || rightextent) {
                 leftp = leftextent;
                 rightp = rightextent;
             } else {
                 leftp = ivals.front().start;
-                std::vector<K> stops;
+                vector<K> stops;
                 stops.resize(ivals.size());
-                std::transform(ivals.begin(), ivals.end(), stops.begin(), intervalStop<T,K>);
-                rightp = *std::max_element(stops.begin(), stops.end());
+                transform(ivals.begin(), ivals.end(), stops.begin(), intervalStop<T,K>);
+                rightp = *max_element(stops.begin(), stops.end());
             }
 
             //centerp = ( leftp + rightp ) / 2;
