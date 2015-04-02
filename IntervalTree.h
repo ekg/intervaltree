@@ -5,8 +5,9 @@
 #include <algorithm>
 #include <iostream>
 
+typedef std::size_t inter_type;
 
-template <class T, typename K = int>
+template <class T, typename K = inter_type>
 class Interval {
 public:
     K start;
@@ -20,12 +21,12 @@ public:
 };
 
 template <class T, typename K>
-int intervalStart(const Interval<T,K>& i) {
+K intervalStart(const Interval<T,K>& i) {
     return i.start;
 }
 
 template <class T, typename K>
-int intervalStop(const Interval<T,K>& i) {
+K intervalStop(const Interval<T,K>& i) {
     return i.stop;
 }
 
@@ -35,7 +36,7 @@ template <class T, typename K>
     return out;
 }
 
-template <class T, typename K = int>
+template <class T, typename K = inter_type>
 class IntervalStartSorter {
 public:
     bool operator() (const Interval<T,K>& a, const Interval<T,K>& b) {
@@ -43,7 +44,7 @@ public:
     }
 };
 
-template <class T, typename K = int>
+template <class T, typename K = inter_type>
 class IntervalTree {
 
 public:
@@ -54,7 +55,7 @@ public:
     intervalVector intervals;
     intervalTree* left;
     intervalTree* right;
-    int center;
+    K center;
 
     IntervalTree<T,K>(void)
         : left(NULL)
@@ -96,11 +97,11 @@ public:
 
     IntervalTree<T,K>(
             intervalVector& ivals,
-            unsigned int depth = 16,
-            unsigned int minbucket = 64,
-            int leftextent = 0,
-            int rightextent = 0,
-            unsigned int maxbucket = 512
+            std::size_t depth = 16,
+            std::size_t minbucket = 64,
+            K leftextent = 0,
+            K rightextent = 0,
+            std::size_t maxbucket = 512
             )
         : left(NULL)
         , right(NULL)
@@ -117,9 +118,9 @@ public:
               std::sort(ivals.begin(), ivals.end(), intervalStartSorter);
             }
 
-            int leftp = 0;
-            int rightp = 0;
-            int centerp = 0;
+            K leftp = 0;
+            K rightp = 0;
+            K centerp = 0;
             
             if (leftextent || rightextent) {
                 leftp = leftextent;
