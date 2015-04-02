@@ -5,9 +5,7 @@
 #include <algorithm>
 #include <iostream>
 
-typedef std::size_t inter_type;
-
-template <class T, typename K = inter_type>
+template <class T, typename K = std::size_t>
 class Interval {
 public:
     K start;
@@ -36,7 +34,7 @@ template <class T, typename K>
     return out;
 }
 
-template <class T, typename K = inter_type>
+template <class T, typename K = std::size_t>
 class IntervalStartSorter {
 public:
     bool operator() (const Interval<T,K>& a, const Interval<T,K>& b) {
@@ -44,7 +42,7 @@ public:
     }
 };
 
-template <class T, typename K = inter_type>
+template <class T, typename K = std::size_t>
 class IntervalTree {
 
 public:
