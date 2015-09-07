@@ -40,20 +40,20 @@ int main() {
     sanityResults.clear();
     sanityTree.findContained(15, 45, sanityResults);
     assert(sanityResults.size() == 1);
-     
+
 
     srand((unsigned)time(NULL));
 
     intervalVector intervals;
     intervalVector queries;
-    
+
     // generate a test set of target intervals
     for (int i = 0; i < 10000; ++i) {
-        intervals.push_back(randomInterval<bool>(100000, 1000, 100000 + 1, true));
+        intervals.push_back(randomInterval<bool, unsigned long>(100000, 1000, 100000 + 1, true));
     }
     // and queries
     for (int i = 0; i < 5000; ++i) {
-        queries.push_back(randomInterval<bool>(100000, 1000, 100000 + 1, true));
+        queries.push_back(randomInterval<bool, unsigned long>(100000, 1000, 100000 + 1, true));
     }
 
     typedef chrono::high_resolution_clock Clock;
