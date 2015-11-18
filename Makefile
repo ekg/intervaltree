@@ -14,7 +14,7 @@ all: ${BIN}
 ${BIN}: interval_tree_test.cpp IntervalTree.h
 	${CXX} ${CXXFLAGS} interval_tree_test.cpp -std=c++0x -o ${BIN}
 
-install:
+install: all
 	${MKDIR} -p ${DESTDIR}${PREFIX}/bin
 	${MKDIR} -p ${DESTDIR}${PREFIX}/include/intervaltree
 	${INSTALL} ${BIN} ${DESTDIR}${PREFIX}/bin
