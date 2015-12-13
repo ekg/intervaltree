@@ -151,6 +151,12 @@ public:
         }
     }
 
+    intervalVector findOverlapping(K start, K stop) const {
+	intervalVector ov;
+	this->findOverlapping(start, stop, ov);
+	return ov;
+    }
+
     void findOverlapping(K start, K stop, intervalVector& overlapping) const {
         if (!intervals.empty() && ! (stop < intervals.front().start)) {
             for (typename intervalVector::const_iterator i = intervals.begin(); i != intervals.end(); ++i) {
@@ -169,6 +175,12 @@ public:
             right->findOverlapping(start, stop, overlapping);
         }
 
+    }
+
+    intervalVector findContained(K start, K stop) const {
+	intervalVector contained;
+	this->findContained(start, stop, contained);
+	return contained;
     }
 
     void findContained(K start, K stop, intervalVector& contained) const {
