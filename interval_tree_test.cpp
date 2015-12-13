@@ -5,6 +5,8 @@
 #include <time.h>
 #include <assert.h>
 #include "IntervalTree.h"
+#define CATCH_CONFIG_RUNNER // Mark this as file as the test-runner for catch
+#include "catch.hpp"        // Include the catch unit test framework
 
 using namespace std;
 
@@ -25,7 +27,7 @@ Interval<T,K> randomInterval(K maxStart, K maxLength, K maxStop, const T& value)
     return Interval<T,K>(start, stop, value);
 }
 
-int main() {
+int main(int argc, char**argv) {
     typedef vector<std::size_t> countsVector;
 
     // a simple sanity check
@@ -94,6 +96,6 @@ int main() {
         assert(*b == *t);
     }
 
-    return 0;
+    return Catch::Session().run( argc, argv );
 }
 
