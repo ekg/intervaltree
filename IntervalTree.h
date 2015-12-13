@@ -63,7 +63,7 @@ public:
     { }
 
 private:
-    std::unique_ptr<intervalTree> copyTree(intervalTree& orig){
+    std::unique_ptr<intervalTree> copyTree(const intervalTree& orig){
         return std::unique_ptr<intervalTree>(new intervalTree(orig));
     }
 public:
@@ -86,6 +86,7 @@ public:
         return *this;
     }
 
+    // Note: changes the order of ivals
     IntervalTree<T,K>(
             intervalVector& ivals,
             std::size_t depth = 16,
@@ -131,8 +132,8 @@ public:
             intervalVector lefts;
             intervalVector rights;
 
-            for (typename intervalVector::iterator i = ivals.begin(); i != ivals.end(); ++i) {
-                interval& interval = *i;
+            for (typename intervalVector::const_iterator i = ivals.begin(); i != ivals.end(); ++i) {
+                const interval& interval = *i;
                 if (interval.stop < center) {
                     lefts.push_back(interval);
                 } else if (interval.start > center) {
@@ -149,6 +150,12 @@ public:
                 right = std::unique_ptr<intervalTree>(new intervalTree(rights, depth, minbucket, centerp, rightp));
             }
         }
+    }
+
+    intervalVector findOverlapping(K start, K stop) const {
+	intervalVector ov;
+	this->findOverlapping(start, stop, ov);
+	return ov;
     }
 
     void findOverlapping(K start, K stop, intervalVector& overlapping) const {
@@ -169,6 +176,12 @@ public:
             right->findOverlapping(start, stop, overlapping);
         }
 
+    }
+
+    intervalVector findContained(K start, K stop) const {
+	intervalVector contained;
+	this->findContained(start, stop, contained);
+	return contained;
     }
 
     void findContained(K start, K stop, intervalVector& contained) const {

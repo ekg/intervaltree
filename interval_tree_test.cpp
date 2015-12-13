@@ -5,12 +5,68 @@
 #include <time.h>
 #include <assert.h>
 #include "IntervalTree.h"
+#define CATCH_CONFIG_RUNNER // Mark this as file as the test-runner for catch
+#include "catch.hpp"        // Include the catch unit test framework
 
 using namespace std;
 
 typedef Interval<bool> interval;
 typedef vector<interval> intervalVector;
 typedef IntervalTree<bool> intervalTree;
+
+TEST_CASE( "Empty tree" ) {
+    IntervalTree<int> t;
+    REQUIRE( t.findOverlapping(-1,1).size() == 0 );
+}
+
+TEST_CASE( "Singleton tree" ) {
+    vector<Interval<double>> values{{1,3,5.5}};
+    IntervalTree<double> t{values};
+
+    SECTION ("Point query on left") {
+	auto v = t.findOverlapping(1,1);
+	REQUIRE( v.size() == 1);
+	REQUIRE( v.front().start == 1 );
+	REQUIRE( v.front().stop == 3 );
+	REQUIRE( v.front().value == 5.5 );
+    }
+
+    SECTION ("Point query in middle") {
+	auto v = t.findOverlapping(2,2);
+	REQUIRE( v.size() == 1);
+	REQUIRE( v.front().start == 1 );
+	REQUIRE( v.front().stop == 3 );
+	REQUIRE( v.front().value == 5.5 );
+    }
+
+    SECTION ("Point query on right") {
+	auto v = t.findOverlapping(3,3);
+	REQUIRE( v.size() == 1);
+	REQUIRE( v.front().start == 1 );
+	REQUIRE( v.front().stop == 3 );
+	REQUIRE( v.front().value == 5.5 );
+    }
+
+    SECTION ("Non-overlapping queries") {
+	REQUIRE( t.findOverlapping(4,4).size() == 0);
+	REQUIRE( t.findOverlapping(0,0).size() == 0);
+    }
+}
+
+TEST_CASE( "Two identical intervals with different contents" ) {
+    vector<Interval<double>> values{{5,10,10.5},{5,10,5.5}};
+    IntervalTree<double> t{values};
+
+    auto v = t.findOverlapping(6,6);
+    REQUIRE( v.size() == 2);
+    REQUIRE( v.front().start == 5 );
+    REQUIRE( v.front().stop == 10 );
+    REQUIRE( v.back().start == 5 );
+    REQUIRE( v.back().stop == 10 );
+    set<double> expected{5.5, 10.5};
+    set<double> actual{v.front().value, v.back().value};
+    REQUIRE( actual == expected);
+}
 
 template<typename K>
 K randKey(K floor, K ceiling) {
@@ -25,7 +81,7 @@ Interval<T,K> randomInterval(K maxStart, K maxLength, K maxStop, const T& value)
     return Interval<T,K>(start, stop, value);
 }
 
-int main() {
+int main(int argc, char**argv) {
     typedef vector<std::size_t> countsVector;
 
     // a simple sanity check
@@ -94,6 +150,5 @@ int main() {
         assert(*b == *t);
     }
 
-    return 0;
+    return Catch::Session().run( argc, argv );
 }
-
