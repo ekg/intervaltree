@@ -64,22 +64,16 @@ public:
 
 private:
     std::unique_ptr<intervalTree> copyTree(intervalTree& orig){
-	return std::unique_ptr<intervalTree>(new intervalTree(orig));
+        return std::unique_ptr<intervalTree>(new intervalTree(orig));
     }
 public:
     
     IntervalTree<T,K>(const intervalTree& other) 
-        : left(nullptr)
-        , right(nullptr)
+    :   intervals(other.intervals),
+        left(other.left ? copyTree(*other.left) : nullptr),
+        right(other.right ? copyTree(*other.right) : nullptr),
+        center(other.center)
     {
-        center = other.center;
-        intervals = other.intervals;
-        if (other.left) {
-            left = copyTree(*other.left);
-        }
-        if (other.right) {
-            right = copyTree(*other.right);
-        }
     }
 
 public:
@@ -87,8 +81,8 @@ public:
     IntervalTree<T,K>& operator=(const intervalTree& other) {
         center = other.center;
         intervals = other.intervals;
-	left = other.left ? copyTree(*other.left) : nullptr;
-	right = other.right ? copyTree(*other.right) : nullptr;
+        left = other.left ? copyTree(*other.left) : nullptr;
+        right = other.right ? copyTree(*other.right) : nullptr;
         return *this;
     }
 
