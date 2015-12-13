@@ -63,7 +63,7 @@ public:
     { }
 
 private:
-    std::unique_ptr<intervalTree> copyTree(intervalTree& orig){
+    std::unique_ptr<intervalTree> copyTree(const intervalTree& orig){
         return std::unique_ptr<intervalTree>(new intervalTree(orig));
     }
 public:
@@ -86,6 +86,7 @@ public:
         return *this;
     }
 
+    // Note: changes the order of ivals
     IntervalTree<T,K>(
             intervalVector& ivals,
             std::size_t depth = 16,
@@ -131,8 +132,8 @@ public:
             intervalVector lefts;
             intervalVector rights;
 
-            for (typename intervalVector::iterator i = ivals.begin(); i != ivals.end(); ++i) {
-                interval& interval = *i;
+            for (typename intervalVector::const_iterator i = ivals.begin(); i != ivals.end(); ++i) {
+                const interval& interval = *i;
                 if (interval.stop < center) {
                     lefts.push_back(interval);
                 } else if (interval.start > center) {
