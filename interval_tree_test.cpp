@@ -30,6 +30,42 @@ TEST_CASE( "Singleton tree" ) {
 	REQUIRE( v.front().stop == 3 );
 	REQUIRE( v.front().value == 5.5 );
     }
+
+    SECTION ("Point query in middle") {
+	auto v = t.findOverlapping(2,2);
+	REQUIRE( v.size() == 1);
+	REQUIRE( v.front().start == 1 );
+	REQUIRE( v.front().stop == 3 );
+	REQUIRE( v.front().value == 5.5 );
+    }
+
+    SECTION ("Point query on right") {
+	auto v = t.findOverlapping(3,3);
+	REQUIRE( v.size() == 1);
+	REQUIRE( v.front().start == 1 );
+	REQUIRE( v.front().stop == 3 );
+	REQUIRE( v.front().value == 5.5 );
+    }
+
+    SECTION ("Non-overlapping queries") {
+	REQUIRE( t.findOverlapping(4,4).size() == 0);
+	REQUIRE( t.findOverlapping(0,0).size() == 0);
+    }
+}
+
+TEST_CASE( "Two identical intervals with different contents" ) {
+    vector<Interval<double>> values{{5,10,10.5},{5,10,5.5}};
+    IntervalTree<double> t{values};
+
+    auto v = t.findOverlapping(6,6);
+    REQUIRE( v.size() == 2);
+    REQUIRE( v.front().start == 5 );
+    REQUIRE( v.front().stop == 10 );
+    REQUIRE( v.back().start == 5 );
+    REQUIRE( v.back().stop == 10 );
+    set<double> expected{5.5, 10.5};
+    set<double> actual{v.front().value, v.back().value};
+    REQUIRE( actual == expected);
 }
 
 template<typename K>
