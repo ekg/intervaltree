@@ -50,7 +50,7 @@ public:
     typedef Interval<T,K> interval;
     typedef std::vector<interval> intervalVector;
     typedef IntervalTree<T,K> intervalTree;
-    
+
     intervalVector intervals;
     std::unique_ptr<intervalTree> left;
     std::unique_ptr<intervalTree> right;
@@ -67,8 +67,8 @@ private:
         return std::unique_ptr<intervalTree>(new intervalTree(orig));
     }
 public:
-    
-    IntervalTree<T,K>(const intervalTree& other) 
+
+    IntervalTree<T,K>(const intervalTree& other)
     :   intervals(other.intervals),
         left(other.left ? copyTree(*other.left) : nullptr),
         right(other.right ? copyTree(*other.right) : nullptr),
@@ -77,7 +77,7 @@ public:
     }
 
 public:
-    
+
     IntervalTree<T,K>& operator=(const intervalTree& other) {
         center = other.center;
         intervals = other.intervals;
@@ -112,7 +112,7 @@ public:
             K leftp = 0;
             K rightp = 0;
             K centerp = 0;
-            
+
             if (leftextent || rightextent) {
                 leftp = leftextent;
                 rightp = rightextent;
