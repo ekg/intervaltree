@@ -14,6 +14,24 @@ typedef Interval<bool> interval;
 typedef vector<interval> intervalVector;
 typedef IntervalTree<bool> intervalTree;
 
+TEST_CASE( "Empty tree" ) {
+    IntervalTree<int> t;
+    REQUIRE( t.findOverlapping(-1,1).size() == 0 );
+}
+
+TEST_CASE( "Singleton tree" ) {
+    vector<Interval<double>> values{{1,3,5.5}};
+    IntervalTree<double> t{values};
+
+    SECTION ("Point query on left") {
+	auto v = t.findOverlapping(1,1);
+	REQUIRE( v.size() == 1);
+	REQUIRE( v.front().start == 1 );
+	REQUIRE( v.front().stop == 3 );
+	REQUIRE( v.front().value == 5.5 );
+    }
+}
+
 template<typename K>
 K randKey(K floor, K ceiling) {
     K range = ceiling - floor;
@@ -98,4 +116,3 @@ int main(int argc, char**argv) {
 
     return Catch::Session().run( argc, argv );
 }
-
