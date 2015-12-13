@@ -4,6 +4,7 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
+#include <memory>
 
 template <class T, typename K = std::size_t>
 class Interval {
@@ -49,47 +50,39 @@ public:
     typedef Interval<T,K> interval;
     typedef std::vector<interval> intervalVector;
     typedef IntervalTree<T,K> intervalTree;
-    
+
     intervalVector intervals;
-    intervalTree* left;
-    intervalTree* right;
+    std::unique_ptr<intervalTree> left;
+    std::unique_ptr<intervalTree> right;
     K center;
 
     IntervalTree<T,K>(void)
-        : left(NULL)
-        , right(NULL)
+        : left(nullptr)
+        , right(nullptr)
         , center(0)
     { }
 
-    IntervalTree<T,K>(const intervalTree& other) 
-        : left(NULL)
-        , right(NULL)
-    {
-        center = other.center;
-        intervals = other.intervals;
-        if (other.left) {
-            left = new intervalTree(*other.left);
-        }
-        if (other.right) {
-            right = new intervalTree(*other.right);
-        }
+private:
+    std::unique_ptr<intervalTree> copyTree(intervalTree& orig){
+        return std::unique_ptr<intervalTree>(new intervalTree(orig));
     }
+public:
+
+    IntervalTree<T,K>(const intervalTree& other)
+    :   intervals(other.intervals),
+        left(other.left ? copyTree(*other.left) : nullptr),
+        right(other.right ? copyTree(*other.right) : nullptr),
+        center(other.center)
+    {
+    }
+
+public:
 
     IntervalTree<T,K>& operator=(const intervalTree& other) {
         center = other.center;
         intervals = other.intervals;
-        if (other.left) {
-            left = new intervalTree(*other.left);
-        } else {
-            if (left) delete left;
-            left = NULL;
-        }
-        if (other.right) {
-            right = new intervalTree(*other.right);
-        } else {
-            if (right) delete right;
-            right = NULL;
-        }
+        left = other.left ? copyTree(*other.left) : nullptr;
+        right = other.right ? copyTree(*other.right) : nullptr;
         return *this;
     }
 
@@ -101,8 +94,8 @@ public:
             K rightextent = 0,
             std::size_t maxbucket = 512
             )
-        : left(NULL)
-        , right(NULL)
+        : left(nullptr)
+        , right(nullptr)
     {
 
         --depth;
@@ -119,7 +112,7 @@ public:
             K leftp = 0;
             K rightp = 0;
             K centerp = 0;
-            
+
             if (leftextent || rightextent) {
                 leftp = leftextent;
                 rightp = rightextent;
@@ -150,10 +143,10 @@ public:
             }
 
             if (!lefts.empty()) {
-                left = new intervalTree(lefts, depth, minbucket, leftp, centerp);
+                left = std::unique_ptr<intervalTree>(new intervalTree(lefts, depth, minbucket, leftp, centerp));
             }
             if (!rights.empty()) {
-                right = new intervalTree(rights, depth, minbucket, centerp, rightp);
+                right = std::unique_ptr<intervalTree>(new intervalTree(rights, depth, minbucket, centerp, rightp));
             }
         }
     }
@@ -198,16 +191,7 @@ public:
 
     }
 
-    ~IntervalTree(void) {
-        // traverse the left and right
-        // delete them all the way down
-        if (left) {
-            delete left;
-        }
-        if (right) {
-            delete right;
-        }
-    }
+    ~IntervalTree(void) = default;
 
 };
 
