@@ -35,11 +35,17 @@ template <class Scalar, typename Value>
     return out;
 }
 
-class IntervalStartLessThan {
-public:
+struct IntervalStartLessThan {
   template <class Scalar, typename Value>
     bool operator()(const Interval<Scalar, Value>& a, const Interval<Scalar, Value>& b) {
         return a.start < b.start;
+    }
+};
+
+struct IntervalStopLessThan {
+  template <class Scalar, typename Value>
+    bool operator()(const Interval<Scalar, Value>& a, const Interval<Scalar, Value>& b) {
+        return a.stop < b.stop;
     }
 };
 
@@ -83,27 +89,31 @@ public:
         return *this;
     }
 
-    // Note: changes the order of ivals
     IntervalTree(
-            interval_vector& ivals,
+            interval_vector&& ivals,
             std::size_t depth = 16,
             std::size_t minbucket = 64,
             Scalar leftextent = 0,
             Scalar rightextent = 0,
-            std::size_t maxbucket = 512
-            )
+            std::size_t maxbucket = 512)
         : left(nullptr)
         , right(nullptr)
     {
         --depth;
-        IntervalStartLessThan intervalStartLessThan;
         if (depth == 0 || (ivals.size() < minbucket && ivals.size() < maxbucket)) {
-            std::sort(ivals.begin(), ivals.end(), intervalStartLessThan);
-            intervals = ivals;
+          std::sort(ivals.begin(), ivals.end(), IntervalStartLessThan());
+            intervals = std::move(ivals);
+            if (!intervals.empty()) {
+                const auto rightpoint = 
+                    std::max_element(intervals.begin(), intervals.end(),
+                                     IntervalStopLessThan())->stop;
+                center = (intervals.front().start + rightpoint) / 2;
+            }
+            return;
         } else {
             if (leftextent == 0 && rightextent == 0) {
                 // sort intervals by start
-              std::sort(ivals.begin(), ivals.end(), intervalStartLessThan);
+                std::sort(ivals.begin(), ivals.end(), IntervalStartLessThan());
             }
 
             Scalar leftp = 0;
@@ -115,14 +125,11 @@ public:
                 rightp = rightextent;
             } else {
                 leftp = ivals.front().start;
-                std::vector<Scalar> stops;
-                stops.resize(ivals.size());
-                transform(ivals.begin(), ivals.end(), stops.begin(), intervalStop<Scalar,Value>);
-                rightp = *max_element(stops.begin(), stops.end());
+                rightp = std::max_element(ivals.begin(), ivals.end(),
+                                          IntervalStopLessThan())->stop;
             }
 
-            //centerp = ( leftp + rightp ) / 2;
-            centerp = ivals.at(ivals.size() / 2).start;
+            centerp = ivals[ivals.size() / 2].start;
             center = centerp;
 
             interval_vector lefts;
@@ -140,10 +147,10 @@ public:
             }
 
             if (!lefts.empty()) {
-                left.reset(new IntervalTree(lefts, depth, minbucket, leftp, centerp));
+                left.reset(new IntervalTree(std::move(lefts), depth, minbucket, leftp, centerp));
             }
             if (!rights.empty()) {
-                right.reset(new IntervalTree(rights, depth, minbucket, centerp, rightp));
+                right.reset(new IntervalTree(std::move(rights), depth, minbucket, centerp, rightp));
             }
         }
     }

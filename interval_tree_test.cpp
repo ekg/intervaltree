@@ -20,8 +20,7 @@ TEST_CASE( "Empty tree" ) {
 }
 
 TEST_CASE( "Singleton tree" ) {
-    vector<Interval<std::size_t, double>> values{{1,3,5.5}};
-    IntervalTree<std::size_t, double> t{values};
+    IntervalTree<std::size_t, double> t{vector<Interval<std::size_t, double>>{{1,3,5.5}}};
 
     SECTION ("Point query on left") {
 	auto v = t.findOverlapping(1,1);
@@ -53,9 +52,8 @@ TEST_CASE( "Singleton tree" ) {
     }
 }
 
-TEST_CASE( "Two identical intervals with different contents" ) {
-    vector<Interval<std::size_t, double>> values{{5,10,10.5},{5,10,5.5}};
-    IntervalTree<std::size_t, double> t{values};
+TEST_CASE( "Two identical intervals with different contents" ) {  
+    IntervalTree<std::size_t, double> t{vector<Interval<std::size_t, double>>{{5,10,10.5},{5,10,5.5}}};
 
     auto v = t.findOverlapping(6,6);
     REQUIRE( v.size() == 2);
@@ -90,7 +88,7 @@ int main(int argc, char**argv) {
     ITree::interval_vector sanityIntervals;
     sanityIntervals.push_back(ITree::interval(60, 80, true));
     sanityIntervals.push_back(ITree::interval(20, 40, true));
-    ITree sanityTree(sanityIntervals);
+    ITree sanityTree(std::move(sanityIntervals));
 
     ITree::interval_vector sanityResults;
     sanityTree.findOverlapping(30, 50, sanityResults);
@@ -134,7 +132,7 @@ int main(int argc, char**argv) {
     cout << "brute force:\t" << ms.count() << "ms" << endl;
 
     // using the interval tree
-    intervalTree tree = intervalTree(intervals);
+    intervalTree tree = intervalTree(std::move(intervals));
     countsVector treecounts;
     t0 = Clock::now();
     for (intervalVector::iterator q = queries.begin(); q != queries.end(); ++q) {
