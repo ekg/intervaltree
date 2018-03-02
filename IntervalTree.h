@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <iostream>
 #include <memory>
+#include <cassert>
 
 template <class Scalar, typename Value>
 class Interval {
