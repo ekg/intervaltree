@@ -31,6 +31,39 @@ TEST_CASE( "Singleton tree" ) {
 	REQUIRE( v.front().value == 5.5 );
     }
 
+    SECTION ("Wild search values") {
+        typedef IntervalTree<double, std::size_t> IT;
+        IT t { {{0.0, 1.0, 0}} };
+        const auto inf = std::numeric_limits<double>::infinity();
+        const auto nan = std::numeric_limits<double>::quiet_NaN();
+        auto sanityResults = t.findOverlapping(inf, inf);
+        assert(sanityResults.size() == 0);
+        sanityResults = t.findOverlapping(-inf, inf);
+        assert(sanityResults.size() == 1);
+        sanityResults = t.findOverlapping(0, inf);
+        assert(sanityResults.size() == 1);
+        sanityResults = t.findOverlapping(0.5, inf);
+        assert(sanityResults.size() == 1);
+        sanityResults = t.findOverlapping(1.1, inf);
+        assert(sanityResults.size() == 0);
+        sanityResults = t.findOverlapping(-inf, 1.0);
+        assert(sanityResults.size() == 1);
+        sanityResults = t.findOverlapping(-inf, 0.5);
+        assert(sanityResults.size() == 1);
+        sanityResults = t.findOverlapping(-inf, 0.0);
+        assert(sanityResults.size() == 1);
+        sanityResults = t.findOverlapping(-inf, -0.1);
+        assert(sanityResults.size() == 0);
+        sanityResults = t.findOverlapping(nan, nan);
+        assert(sanityResults.size() == 0);
+        sanityResults = t.findOverlapping(-nan, nan);
+        assert(sanityResults.size() == 0);
+        sanityResults = t.findOverlapping(nan, 1);
+        assert(sanityResults.size() == 0);
+        sanityResults = t.findOverlapping(0, nan);
+        assert(sanityResults.size() == 0);
+    }
+
     SECTION ("Point query in middle") {
 	auto v = t.findOverlapping(2,2);
 	REQUIRE( v.size() == 1);
