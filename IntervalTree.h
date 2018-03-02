@@ -173,6 +173,12 @@ public:
         }
     }
 
+    // Call f on all intervals crossing pos
+    template <class UnaryFunction>
+    void visit_overlapping(const Scalar& pos, UnaryFunction f) const {
+        visit_overlapping(pos, pos, f);
+    }
+
     // Call f on all intervals overlapping [start, stop]
     template <class UnaryFunction>
     void visit_overlapping(const Scalar& start, const Scalar& stop, UnaryFunction f) const {
