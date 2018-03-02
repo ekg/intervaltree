@@ -10,18 +10,18 @@
 
 using namespace std;
 
-typedef Interval<bool> interval;
-typedef vector<interval> intervalVector;
-typedef IntervalTree<bool> intervalTree;
+typedef IntervalTree<std::size_t, bool> intervalTree;
+typedef intervalTree::interval interval;
+typedef intervalTree::interval_vector intervalVector;
 
 TEST_CASE( "Empty tree" ) {
-    IntervalTree<int> t;
+    IntervalTree<std::size_t, int> t;
     REQUIRE( t.findOverlapping(-1,1).size() == 0 );
 }
 
 TEST_CASE( "Singleton tree" ) {
-    vector<Interval<double>> values{{1,3,5.5}};
-    IntervalTree<double> t{values};
+    vector<Interval<std::size_t, double>> values{{1,3,5.5}};
+    IntervalTree<std::size_t, double> t{values};
 
     SECTION ("Point query on left") {
 	auto v = t.findOverlapping(1,1);
@@ -54,8 +54,8 @@ TEST_CASE( "Singleton tree" ) {
 }
 
 TEST_CASE( "Two identical intervals with different contents" ) {
-    vector<Interval<double>> values{{5,10,10.5},{5,10,5.5}};
-    IntervalTree<double> t{values};
+    vector<Interval<std::size_t, double>> values{{5,10,10.5},{5,10,5.5}};
+    IntervalTree<std::size_t, double> t{values};
 
     auto v = t.findOverlapping(6,6);
     REQUIRE( v.size() == 2);
@@ -68,29 +68,31 @@ TEST_CASE( "Two identical intervals with different contents" ) {
     REQUIRE( actual == expected);
 }
 
-template<typename K>
-K randKey(K floor, K ceiling) {
-    K range = ceiling - floor;
+template<typename Scalar>
+Scalar randKey(Scalar floor, Scalar ceiling) {
+    Scalar range = ceiling - floor;
     return floor + range * ((double) rand() / (double) (RAND_MAX + 1.0));
 }
 
-template<class T, typename K>
-Interval<T,K> randomInterval(K maxStart, K maxLength, K maxStop, const T& value) {
-    K start = randKey<K>(0, maxStart);
-    K stop = min<K>(randKey<K>(start, start + maxLength), maxStop);
-    return Interval<T,K>(start, stop, value);
+template<class Scalar, typename Value>
+Interval<Scalar, Value> randomInterval(Scalar maxStart,  Scalar maxLength, Scalar maxStop, 
+                                       const Value& value) {
+    Scalar start = randKey<Scalar>(0, maxStart);
+    Scalar stop = min<Scalar>(randKey<Scalar>(start, start + maxLength), maxStop);
+    return Interval<Scalar, Value>(start, stop, value);
 }
 
 int main(int argc, char**argv) {
     typedef vector<std::size_t> countsVector;
 
     // a simple sanity check
-    intervalVector sanityIntervals;
-    sanityIntervals.push_back(interval(60, 80, true));
-    sanityIntervals.push_back(interval(20, 40, true));
-    intervalTree sanityTree(sanityIntervals);
+    typedef intervalTree ITree;
+    ITree::interval_vector sanityIntervals;
+    sanityIntervals.push_back(ITree::interval(60, 80, true));
+    sanityIntervals.push_back(ITree::interval(20, 40, true));
+    ITree sanityTree(sanityIntervals);
 
-    intervalVector sanityResults;
+    ITree::interval_vector sanityResults;
     sanityTree.findOverlapping(30, 50, sanityResults);
     assert(sanityResults.size() == 1);
     sanityResults.clear();
@@ -105,11 +107,11 @@ int main(int argc, char**argv) {
 
     // generate a test set of target intervals
     for (int i = 0; i < 10000; ++i) {
-        intervals.push_back(randomInterval<bool, unsigned long>(100000, 1000, 100000 + 1, true));
+      intervals.push_back(randomInterval<std::size_t, bool>(100000, 1000, 100000 + 1, true));
     }
     // and queries
     for (int i = 0; i < 5000; ++i) {
-        queries.push_back(randomInterval<bool, unsigned long>(100000, 1000, 100000 + 1, true));
+      queries.push_back(randomInterval<std::size_t, bool>(100000, 1000, 100000 + 1, true));
     }
 
     typedef chrono::high_resolution_clock Clock;
