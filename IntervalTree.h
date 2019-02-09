@@ -7,6 +7,9 @@
 #include <memory>
 #include <cassert>
 
+#ifdef USE_INTERVAL_TREE_NAMESPACE
+namespace interval_tree {
+#endif
 template <class Scalar, typename Value>
 class Interval {
 public:
@@ -333,5 +336,8 @@ private:
     std::unique_ptr<IntervalTree> right;
     Scalar center;
 };
+#ifdef USE_INTERVAL_TREE_NAMESPACE
+}
+#endif
 
 #endif
