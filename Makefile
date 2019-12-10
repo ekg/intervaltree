@@ -8,7 +8,7 @@
 # FreeBSD ports, MacPorts, pkgsrc, etc.)
 
 CXX ?=		c++
-CXXFLAGS ?=	-Wall
+CXXFLAGS +=	-Wall
 DESTDIR ?=	stage
 PREFIX ?=	/usr/local
 MKDIR ?=	mkdir
@@ -20,7 +20,7 @@ BIN =	interval_tree_test
 all: ${BIN}
 
 ${BIN}: interval_tree_test.cpp IntervalTree.h
-	${CXX} ${CXXFLAGS} interval_tree_test.cpp -std=c++0x -o ${BIN}
+	${CXX} $(CPPFLAGS) ${CXXFLAGS} $(LDFLAGS) interval_tree_test.cpp -std=c++0x -o ${BIN}
 
 install: all
 	${MKDIR} -p ${DESTDIR}${PREFIX}/bin
