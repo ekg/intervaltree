@@ -2,6 +2,7 @@
 #include <thread>
 #include <chrono>
 #include <random>
+#include <limits>
 #include <time.h>
 #include <assert.h>
 #include "IntervalTree.h"
